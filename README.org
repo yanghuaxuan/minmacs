@@ -1,0 +1,6 @@
+* MinMacs: My second Emacs config
+Since I've been using Doom Emacs, my first Emacs config is very messy and no longer reflects my current workflow, I've decided to make another Emacs config!
+
+With Emacs 29, a good chunk of "core" Emacs plugins have actually became part of Emacs (use-package, tree-sitter, eglot), therefore, I've decided to revisit making my own Emacs configuration, using as little external packages as possible.
+
+Emacs >= 39 Required!

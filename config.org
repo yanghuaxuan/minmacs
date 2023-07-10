@@ -1,0 +1,341 @@
+#+TITLE: MinMacs GNU Emacs Config
+#+AUTHOR: hyang
+#+OPTIONS: toc:2
+
+* Table of Contents :TOC:
+- [[#packageel][package.el]]
+- [[#comfy-ize][Comfy-ize]]
+  - [[#evil][Evil]]
+  - [[#which-key][Which-Key]]
+  - [[#vertico][Vertico]]
+  - [[#consult][Consult]]
+  - [[#org][Org]]
+  - [[#magit][Magit]]
+  - [[#vterm][Vterm]]
+  - [[#company][Company]]
+  - [[#zoom][Zoom]]
+  - [[#treesitter][Treesitter]]
+- [[#annoyances][Annoyances]]
+  - [[#dedicated-backup-file-directory][Dedicated backup file directory]]
+- [[#ui-tweaks][UI Tweaks]]
+  - [[#disable-tool-and-scroll-bar][Disable tool and scroll bar]]
+  - [[#line-spacing][Line spacing]]
+  - [[#line-numbers][Line numbers]]
+  - [[#italicize-comments][Italicize comments]]
+- [[#theme][Theme]]
+- [[#key-bindings][Key Bindings]]
+  - [[#mac-stuff][Mac stuff]]
+
+* package.el
+Default Emacs package manager. _Must_ be loaded first.
+#+begin_src emacs-lisp
+  (setq package-archives
+	'(("melpa" . "https://melpa.org/packages/")
+	  ("elpa" . "https://elpa.gnu.org/packages/")))
+  (package-initialize)
+  (package-refresh-contents)
+#+end_src
+
+* Comfy-ize
+General UX enhancing packages goes here.
+** Evil
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-vsplit-window-right t)
+    :config
+    (evil-mode 1))
+
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :config
+    (setq evil-want-integration t)
+    (evil-collection-init))
+#+end_src
+** Which-Key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode))
+#+end_src
+** Vertico
+#+begin_src emacs-lisp
+  (use-package vertico
+    :ensure t
+    :init
+    (vertico-mode))
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+#+end_src
+
+** Consult
+#+begin_src emacs-lisp
+  ; Enable lexical binding: Recommended by Consult
+  (setq lexical-binding t)
+
+  ;; Example configuration for Consult
+  (use-package consult
+    :ensure t
+    ;; Replace bindings. Lazily loaded due by `use-package'.
+    :bind (;; C-c bindings in `mode-specific-map'
+	   ("C-c M-x" . consult-mode-command)
+	   ("C-c h" . consult-history)
+	   ("C-c k" . consult-kmacro)
+	   ("C-c m" . consult-man)
+	   ("C-c i" . consult-info)
+	   ([remap Info-search] . consult-info)
+	   ;; C-x bindings in `ctl-x-map'
+	   ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+	   ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+	   ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+	   ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+	   ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+	   ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+	   ;; Custom M-# bindings for fast register access
+	   ("M-#" . consult-register-load)
+	   ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+	   ("C-M-#" . consult-register)
+	   ;; Other custom bindings
+	   ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+	   ;; M-g bindings in `goto-map'
+	   ("M-g e" . consult-compile-error)
+	   ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+	   ("M-g g" . consult-goto-line)             ;; orig. goto-line
+	   ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+	   ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+	   ("M-g m" . consult-mark)
+	   ("M-g k" . consult-global-mark)
+	   ("M-g i" . consult-imenu)
+	   ("M-g I" . consult-imenu-multi)
+	   ;; M-s bindings in `search-map'
+	   ("M-s d" . consult-find)
+	   ("M-s D" . consult-locate)
+	   ("M-s g" . consult-grep)
+	   ("M-s G" . consult-git-grep)
+	   ("M-s r" . consult-ripgrep)
+	   ("M-s l" . consult-line)
+	   ("M-s L" . consult-line-multi)
+	   ("M-s k" . consult-keep-lines)
+	   ("M-s u" . consult-focus-lines)
+	   ;; Isearch integration
+	   ("M-s e" . consult-isearch-history)
+	   :map isearch-mode-map
+	   ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+	   ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+	   ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+	   ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+	   ;; Minibuffer history
+	   :map minibuffer-local-map
+	   ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+	   ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+    ;; Enable automatic preview at point in the *Completions* buffer. This is
+    ;; relevant when you use the default completion UI.
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+
+    ;; The :init configuration is always executed (Not lazy)
+    :init
+
+    ;; Optionally configure the register formatting. This improves the register
+    ;; preview for `consult-register', `consult-register-load',
+    ;; `consult-register-store' and the Emacs built-ins.
+    (setq register-preview-delay 0.5
+	  register-preview-function #'consult-register-format)
+
+    ;; Optionally tweak the register preview window.
+    ;; This adds thin lines, sorting and hides the mode line of the window.
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    ;; Use Consult to select xref locations with preview
+    (setq xref-show-xrefs-function #'consult-xref
+	  xref-show-definitions-function #'consult-xref)
+
+    ;; Configure other variables and modes in the :config section,
+    ;; after lazily loading the package.
+    :config
+
+    ;; Optionally configure preview. The default value
+    ;; is 'any, such that any key triggers the preview.
+    ;; (setq consult-preview-key 'any)
+    ;; (setq consult-preview-key "M-.")
+    ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+    ;; For some commands and buffer sources it is useful to configure the
+    ;; :preview-key on a per-command basis using the `consult-customize' macro.
+    (consult-customize
+     consult-theme :preview-key '(:debounce 0.2 any)
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-file-register
+     consult--source-recent-file consult--source-project-recent-file
+     ;; :preview-key "M-."
+     :preview-key '(:debounce 0.4 any))
+
+    ;; Optionally configure the narrowing key.
+    ;; Both < and C-+ work reasonably well.
+    (setq consult-narrow-key "<") ;; "C-+"
+
+    ;; Optionally make narrowing help available in the minibuffer.
+    ;; You may want to use `embark-prefix-help-command' or which-key instead.
+    ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+    ;; By default `consult-project-function' uses `project-root' from project.el.
+    ;; Optionally configure a different project root function.
+    ;;;; 1. project.el (the default)
+    ;; (setq consult-project-function #'consult--default-project--function)
+    ;;;; 2. vc.el (vc-root-dir)
+    ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
+    ;;;; 3. locate-dominating-file
+    ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+    ;;;; 4. projectile.el (projectile-project-root)
+    ;; (autoload 'projectile-project-root "projectile")
+    ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+    ;;;; 5. No project support
+    ;; (setq consult-project-function nil)
+  )
+#+end_src
+
+** Org
+*** Org tempo (tag expansion)
+| Typing the below + TAB | Expands to ...                          |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+#+end_src
+*** Increase size of org headers
+#+begin_src emacs-lisp
+  (set-face-attribute 'org-level-1 nil :height 1.25)
+  (set-face-attribute 'org-level-2 nil :height 1.15)
+#+end_src
+*** Enable table of contents
+#+begin_src emacs-lisp
+  (use-package toc-org
+      :ensure t
+      :commands toc-org-enable
+      :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+** Magit
+Because no modern text editor in $CURRENT_YEAR does not have git integration
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t
+    :init
+    (setq with-editor-emacsclient-executable "/etc/profiles/per-user/raph/bin/emacsclient"))
+#+end_src
+
+** Vterm
+The default emacs shell, eshell, has a lot of problems which make daily-driving as a terminal a headache. Therefore, we're going to use vterm for our emacs terminal, a frontend for libvterm (this means fast)
+
+Note: You will need cmake to compile the vterm-module
+#+begin_src emacs-lisp
+  (use-package vterm
+    :ensure t)
+#+end_src
+** Company
+/Should also be part of Emacs core at this point/
+#+begin_src emacs-lisp
+  (use-package company
+    :ensure t
+    :defer 2
+    :custom
+    (company-begin-commands '(self-insert-command))
+    (company-idle-delay .1)
+    (company-minimum-prefix-length 2)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations 't)
+    (global-company-mode t))
+
+  (use-package company-box
+    :ensure t
+    :after company
+    :hook (company-mode . company-box-mode))
+#+end_src
+** Zoom
+Golden Ratio window balancing... very nice
+#+begin_src emacs-lisp
+  (use-package zoom
+    :ensure t
+    :config
+    (setq zoom-size '(0.618 . 0.618))
+    (zoom-mode t)
+  )
+#+end_src
+
+** Treesitter
+It seems that native Emacs 29 treesitter is currently not ready yet.
+
+* Annoyances
+** Dedicated backup file directory
+#+begin_src emacs-lisp
+  (if (not (file-directory-p (expand-file-name "backups" user-emacs-directory)))
+     (make-directory "backups"))
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups"))
+     backup-by-copying t    ; Don't delink hardlinks
+     version-control t      ; Use version numbers on backups
+     delete-old-versions t)  ; Automatically delete excess backups
+#+end_src
+
+* UI Tweaks
+** Disable tool and scroll bar
+On Linux I wouldn't really mind them, as I can customize the icons to not be terrible. On MacOS however, they really look ugly and aren't easily customizable, therefore they need to go >:(
+#+begin_src emacs-lisp
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+** Line spacing
+#+begin_src 
+  (setq-default line-spacing 0.12)
+#+end_src
+** Line numbers
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+#+end_src
+** Italicize comments
+#+begin_src emacs-lisp
+  (set-face-attribute 'font-lock-comment-face nil
+    :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+    :slant 'italic)
+#+end_src
+
+
+* Theme
+The only theme I know of that looks good, has legible syntax colors, and doesn't have bad Org header coloring
+#+begin_src emacs-lisp
+  (use-package catppuccin-theme
+    :ensure t
+    :init
+    (setq catppuccin-flavor 'mocha)
+    :config
+    (load-theme 'catppuccin :no-confirm))
+#+end_src
+
+
+* Key Bindings
+** Mac stuff
+#+begin_src emacs-lisp
+  (if (string-equal system-type "darwin")
+    (setq mac-command-modifier 'control))
+#+end_src
+
+
