@@ -17,6 +17,7 @@
   - [[#treesitter][Treesitter]]
 - [[#annoyances][Annoyances]]
   - [[#dedicated-backup-file-directory][Dedicated backup file directory]]
+  - [[#dedicated-custom-config-file][Dedicated Custom config file]]
 - [[#ui-tweaks][UI Tweaks]]
   - [[#disable-tool-and-scroll-bar][Disable tool and scroll bar]]
   - [[#line-spacing][Line spacing]]
@@ -292,6 +293,12 @@ It seems that native Emacs 29 treesitter is currently not ready yet.
      backup-by-copying t    ; Don't delink hardlinks
      version-control t      ; Use version numbers on backups
      delete-old-versions t)  ; Automatically delete excess backups
+#+end_src
+** Dedicated Custom config file
+Prevent Custom from polluting my init.el file
+#+begin_src emacs-lisp
+  (setq custom-file
+    (expand-file-name "custom_config.el" user-emacs-directory))
 #+end_src
 
 * UI Tweaks
