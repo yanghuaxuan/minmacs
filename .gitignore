@@ -6,3 +6,5 @@ transient/
 tutorial/
 config.el
 custom_config.el
+*#*
+*.db

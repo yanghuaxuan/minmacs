@@ -236,6 +236,64 @@ General UX enhancing packages goes here.
       :commands toc-org-enable
       :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
+*** Habits
+#+begin_src emacs-lisp
+  (add-to-list 'org-modules 'habit t)
+  (setq 
+	org-agenda-show-future-repeats t
+	org-agenda-show-future-repeats 'next)
+#+end_src
+*** GTD
+#+begin_src emacs-lisp
+(setq org-agenda-files (list (concat org-directory "/gtd"))
+      org-capture-templates `(("t" "Todo [inbox]" entry
+    			 (file+headline ,(concat org-directory "/gtd/gtd_inbox.org") "Tasks")
+    			 "* TODO %i%?")
+    			("T" "Tickler" entry
+    			 (file+headline ,(concat org-directory "gtd/gtd_tickler.org") "Tickler")
+    			 "* %i%? \n %U"))
+      org-refile-targets `((,(concat org-directory "/gtd/gtd_projects.org") :maxlevel . 3)
+    		     (,(concat org-directory "/gtd/gtd_someday.org") :level . 1)
+    		     (,(concat org-directory "/gtd/gtd_tickler.org") :maxlevel . 2))
+      org-image-actual-width nil)
+#+end_src
+
+*** Custom agenda
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+	'(("v" "General view"
+	   (
+	    (tags "PRIORITY=\"A\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "High-priority unfinished tasks:")))
+	    (agenda ""
+		    ((org-agenda-span 9)
+		     (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("HOLD")))
+		     (org-agenda-start-on-weekday nil)))
+	    (tags "PRIORITY=\"B\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+	    (tags "PRIORITY=\"C\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "Low-priority unfinished tasks:")))
+	    ;(tags "customtag"
+	    ;      ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ")))
+	    ;       (org-agenda-overriding-header "Tasks marked with customtag:")))
+
+	    ;(alltodo "")
+	    ))))
+#+end_src
+*** Org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :after (org)
+    :config
+     (setq 
+	  org-roam-directory (concat org-directory "/roam/")
+	  org-roam-index-file (concat org-directory "/roam/index.org")))
+#+end_src
+
 ** Magit
 Because no modern text editor in $CURRENT_YEAR does not have git integration
 #+begin_src emacs-lisp
@@ -324,10 +382,10 @@ On Linux I wouldn't really mind them, as I can customize the icons to not be ter
 ** Line numbers
 Global relative line numbering
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode 1)
-  (setq display-line-numbers 'relative)
-  (global-visual-line-mode t)
+  (setq display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode) 
 #+end_src
+
 ** Italicize comments
 #+begin_src emacs-lisp
   (set-face-attribute 'font-lock-comment-face nil
