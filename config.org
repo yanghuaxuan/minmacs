@@ -24,6 +24,7 @@
   - [[#line-spacing][Line spacing]]
   - [[#line-numbers][Line numbers]]
   - [[#italicize-comments][Italicize comments]]
+  - [[#tab-bars][Tab bars]]
 - [[#theme][Theme]]
 - [[#key-bindings][Key Bindings]]
   - [[#mac-stuff][Mac stuff]]
@@ -332,7 +333,12 @@ On Linux I wouldn't really mind them, as I can customize the icons to not be ter
   (set-face-attribute 'font-lock-keyword-face nil
     :slant 'italic)
 #+end_src
-
+** Tab bars
+#+begin_src emacs-lisp
+  (setq tab-bar-close-button-show nil
+	tab-bar-new-button-show nil)
+  (tab-bar-mode t)
+#+end_src
 
 * Theme
 The only theme I know of that looks good, has legible syntax colors, and doesn't have bad Org header coloring
