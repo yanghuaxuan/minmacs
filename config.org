@@ -240,8 +240,7 @@ Because no modern text editor in $CURRENT_YEAR does not have git integration
 #+begin_src emacs-lisp
   (use-package magit
     :ensure t
-    :init
-    (setq with-editor-emacsclient-executable "/etc/profiles/per-user/raph/bin/emacsclient"))
+  )
 #+end_src
 
 ** Vterm
