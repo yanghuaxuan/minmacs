@@ -16,6 +16,7 @@
   - [[#zoom][Zoom]]
   - [[#treesitter][Treesitter]]
   - [[#orderless][Orderless]]
+  - [[#zen][Zen]]
 - [[#annoyances][Annoyances]]
   - [[#dedicated-backup-file-directory][Dedicated backup file directory]]
   - [[#dedicated-custom-config-file][Dedicated Custom config file]]
@@ -348,6 +349,16 @@ It seems that native Emacs 29 treesitter is currently not ready yet.
     :custom
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+** Zen
+Distraction free writing
+#+begin_src emacs-lisp
+  (use-package olivetti
+    :ensure t
+    :custom
+    (olivetti-body-width 120)
+    :init (add-hook 'org-mode-hook 'olivetti-mode)
+    :after org)
 #+end_src
 
 * Annoyances
