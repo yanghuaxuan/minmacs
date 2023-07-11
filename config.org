@@ -322,8 +322,10 @@ On Linux I wouldn't really mind them, as I can customize the icons to not be ter
   (setq-default line-spacing 0.12)
 #+end_src
 ** Line numbers
+Global relative line numbering
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode 1)
+  (setq display-line-numbers 'relative)
   (global-visual-line-mode t)
 #+end_src
 ** Italicize comments
