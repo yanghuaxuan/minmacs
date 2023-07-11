@@ -8,3 +8,4 @@ config.el
 custom_config.el
 *#*
 *.db
+url/
