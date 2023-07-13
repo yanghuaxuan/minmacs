@@ -1,6 +1,9 @@
 *~*
 elpa/
 eln-cache/
+straight/
+projects
+eshell/
 init.elc
 transient/
 tutorial/
@@ -9,3 +12,5 @@ custom_config.el
 *#*
 *.db
 url/
+.dotenv.el
+tree-sitter/
