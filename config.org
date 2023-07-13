@@ -30,6 +30,7 @@
 - [[#theme][Theme]]
 - [[#key-bindings][Key Bindings]]
   - [[#mac-stuff][Mac stuff]]
+  - [[#windmove][Windmove]]
 - [[#hot-reload-emacs-config][Hot-Reload Emacs config]]
 
 * Lexical binding
@@ -442,6 +443,11 @@ The only theme I know of that looks good, has legible syntax colors, and doesn't
 #+begin_src emacs-lisp
   (if (string-equal system-type "darwin")
     (setq mac-command-modifier 'control))
+#+end_src
+** Windmove
+#+begin_src emacs-lisp
+  (when (fboundp 'windmove-default-keybindings)
+    (windmove-default-keybindings))
 #+end_src
 
 
