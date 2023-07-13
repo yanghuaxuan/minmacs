@@ -3,7 +3,7 @@
 #+OPTIONS: toc:2
 
 * Table of Contents :TOC:
-- [[#packageel][package.el]]
+- [[#straightel][straight.el]]
 - [[#comfy-ize][Comfy-ize]]
   - [[#evil][Evil]]
   - [[#which-key][Which-Key]]
@@ -30,14 +30,23 @@
 - [[#key-bindings][Key Bindings]]
   - [[#mac-stuff][Mac stuff]]
 
-* package.el
-Default Emacs package manager. _Must_ be loaded first.
+* straight.el
+While Emacs' default package manager, ~package.el~ is fine, it does not guarantee reproducible packages, and also relies on its GUI manager a bit too much for me.
 #+begin_src emacs-lisp
-  (setq package-archives
-	'(("melpa" . "https://melpa.org/packages/")
-	  ("elpa" . "https://elpa.gnu.org/packages/")))
-  (package-initialize)
-  (package-refresh-contents)
+  (setq straight-use-package-by-default t)
+
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 #+end_src
 
 * Comfy-ize
