@@ -424,14 +424,12 @@ Global relative line numbering
 * Theme
 The only theme I know of that looks good, has legible syntax colors, and doesn't have bad Org header coloring
 #+begin_src emacs-lisp
-  (use-package catppuccin-theme
+  (use-package modus-themes
     :ensure t
     :init
-    (setq catppuccin-flavor 'mocha)
     :config
-    (load-theme 'catppuccin :no-confirm))
+    (load-theme 'modus-vivendi))
 #+end_src
-
 
 * Key Bindings
 ** Mac stuff
