@@ -3,6 +3,7 @@
 #+OPTIONS: toc:2
 
 * Table of Contents :TOC:
+- [[#lexical-binding][Lexical binding]]
 - [[#straightel][straight.el]]
 - [[#comfy-ize][Comfy-ize]]
   - [[#evil][Evil]]
@@ -29,6 +30,13 @@
 - [[#theme][Theme]]
 - [[#key-bindings][Key Bindings]]
   - [[#mac-stuff][Mac stuff]]
+- [[#hot-reload-emacs-config][Hot-Reload Emacs config]]
+
+* Lexical binding
+#+begin_src emacs-lisp
+  ; Enable lexical binding
+  (setq lexical-binding t)
+#+end_src
 
 * straight.el
 While Emacs' default package manager, ~package.el~ is fine, it does not guarantee reproducible packages, and also relies on its GUI manager a bit too much for me.
@@ -92,9 +100,6 @@ General UX enhancing packages goes here.
 
 ** Consult
 #+begin_src emacs-lisp
-  ; Enable lexical binding: Recommended by Consult
-  (setq lexical-binding t)
-
   ;; Example configuration for Consult
   (use-package consult
     :ensure t
