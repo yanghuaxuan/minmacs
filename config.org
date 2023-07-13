@@ -15,12 +15,13 @@
   - [[#vterm][Vterm]]
   - [[#company][Company]]
   - [[#zoom][Zoom]]
-  - [[#treesitter][Treesitter]]
   - [[#orderless][Orderless]]
   - [[#zen][Zen]]
+  - [[#treesitter][Treesitter]]
 - [[#annoyances][Annoyances]]
   - [[#dedicated-backup-file-directory][Dedicated backup file directory]]
   - [[#dedicated-custom-config-file][Dedicated Custom config file]]
+  - [[#fix-path-issues-in-mac][Fix $PATH issues in Mac]]
 - [[#ui-tweaks][UI Tweaks]]
   - [[#disable-tool-and-scroll-bar][Disable tool and scroll bar]]
   - [[#line-spacing][Line spacing]]
@@ -355,8 +356,6 @@ Golden Ratio window balancing... very nice
     (zoom-mode t)
   )
 #+end_src
-** Treesitter
-It seems that native Emacs 29 treesitter is currently not ready yet.
 ** Orderless
 #+begin_src emacs-lisp
   (use-package orderless
@@ -374,6 +373,14 @@ Distraction free writing
     (olivetti-body-width 120)
     :init (add-hook 'org-mode-hook 'olivetti-mode)
     :after org)
+#+end_src
+** Treesitter
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :ensure t
+    :config
+    (global-treesit-auto-mode))
+
 #+end_src
 
 * Annoyances
