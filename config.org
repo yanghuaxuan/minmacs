@@ -393,6 +393,14 @@ Prevent Custom from polluting my init.el file
   (setq custom-file
     (expand-file-name "custom_config.el" user-emacs-directory))
 #+end_src
+** Fix $PATH issues in Mac
+#+begin_src emacs-lisp
+(when (memq window-system '(mac ns x))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize)))
+#+end_src
 
 * UI Tweaks
 ** Disable tool and scroll bar
