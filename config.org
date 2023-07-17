@@ -25,6 +25,7 @@
   - [[#gtd][GTD]]
   - [[#custom-agenda][Custom agenda]]
   - [[#org-roam][Org-roam]]
+  - [[#custom-todo-states][Custom TODO states]]
   - [[#evil-extensions][Evil extensions]]
 - [[#language-packages][Language Packages]]
   - [[#web-stuff][Web stuff]]
@@ -152,7 +153,7 @@ General UX enhancing packages goes here.
 
     ;; Enable automatic preview at point in the *Completions* buffer. This is
     ;; relevant when you use the default completion UI.
-    :hook (completion-list-mode . consult-preview-at-point-mode)
+    ;:hook (completion-list-mode . consult-preview-at-point-mode)
 
     ;; The :init configuration is always executed (Not lazy)
     :init
@@ -207,7 +208,7 @@ General UX enhancing packages goes here.
     ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
     ;;;; 3. locate-dominating-file
     ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
-    ;;;; 4. projectile.el (projectile-project-root)
+    ;;;; 4. projectile.el (projectile-proect-root)
     ;; (autoload 'projectile-project-root "projectile")
     ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
     ;;;; 5. No project support
@@ -215,8 +216,6 @@ General UX enhancing packages goes here.
   )
 #+end_src
 
-** Org
-*** Org tempo (tag expansion)
 | Typing the below + TAB | Expands to ...                          |
 |------------------------+-----------------------------------------|
 | <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
@@ -229,79 +228,6 @@ General UX enhancing packages goes here.
 | <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
 | <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
 | <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
-
-#+begin_src emacs-lisp
-  (require 'org-tempo)
-#+end_src
-*** Increase size of org headers
-#+begin_src emacs-lisp
-  (set-face-attribute 'org-level-1 nil :height 1.25)
-  (set-face-attribute 'org-level-2 nil :height 1.15)
-#+end_src
-*** Enable table of contents
-#+begin_src emacs-lisp
-  (use-package toc-org
-      :ensure t
-      :commands toc-org-enable
-      :init (add-hook 'org-mode-hook 'toc-org-enable))
-#+end_src
-*** Habits
-#+begin_src emacs-lisp
-  (add-to-list 'org-modules 'habit t)
-  (setq 
-	org-agenda-show-future-repeats t
-	org-agenda-show-future-repeats 'next)
-#+end_src
-*** GTD
-#+begin_src emacs-lisp
-(setq org-agenda-files (list (concat org-directory "/gtd"))
-      org-capture-templates `(("t" "Todo [inbox]" entry
-    			 (file+headline ,(concat org-directory "/gtd/gtd_inbox.org") "Tasks")
-    			 "* TODO %i%?")
-    			("T" "Tickler" entry
-    			 (file+headline ,(concat org-directory "gtd/gtd_tickler.org") "Tickler")
-    			 "* %i%? \n %U"))
-      org-refile-targets `((,(concat org-directory "/gtd/gtd_projects.org") :maxlevel . 3)
-    		     (,(concat org-directory "/gtd/gtd_someday.org") :level . 1)
-    		     (,(concat org-directory "/gtd/gtd_tickler.org") :maxlevel . 2))
-      org-image-actual-width nil)
-#+end_src
-
-*** Custom agenda
-#+begin_src emacs-lisp
-  (setq org-agenda-custom-commands
-	'(("v" "General view"
-	   (
-	    (tags "PRIORITY=\"A\""
-		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
-		   (org-agenda-overriding-header "High-priority unfinished tasks:")))
-	    (agenda ""
-		    ((org-agenda-span 9)
-		     (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("HOLD")))
-		     (org-agenda-start-on-weekday nil)))
-	    (tags "PRIORITY=\"B\""
-		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
-		   (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
-	    (tags "PRIORITY=\"C\""
-		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
-		   (org-agenda-overriding-header "Low-priority unfinished tasks:")))
-	    ;(tags "customtag"
-	    ;      ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ")))
-	    ;       (org-agenda-overriding-header "Tasks marked with customtag:")))
-
-	    ;(alltodo "")
-	    ))))
-#+end_src
-*** Org-roam
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :ensure t
-    :after (org)
-    :config
-     (setq 
-	  org-roam-directory (concat org-directory "/roam/")
-	  org-roam-index-file (concat org-directory "/roam/index.org")))
-#+end_src
 
 ** Magit
 Because no modern text editor in $CURRENT_YEAR does not have git integration
@@ -372,7 +298,129 @@ Distraction free writing
     :ensure t
     :config
     (global-treesit-auto-mode))
+#+end_src
+** LSP Mode
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+       (python-mode . lsp)
+       (typescript-ts-mode . lsp)
+       (javascript-mode . lsp)
+       (web-mode . lsp)
+       ;; if you want which-key integration
+       (lsp-mode . lsp-enable-which-key-integration)))
+#+end_src
 
+
+* Org
+Worthy of a entire new header!
+** Org tempo (tag expansion)
+| Typing the below + TAB | Expands to ...                          |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| h                      | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| l                      | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| q                      | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| s                      | '#+BEGIN_SRC' … '#+END_SRC'             |
+| v                      | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+#+end_src
+** Increase size of org headers
+#+begin_src emacs-lisp
+  (set-face-attribute 'org-level-1 nil :height 1.25)
+  (set-face-attribute 'org-level-2 nil :height 1.15)
+#+end_src
+** Enable table of contents
+#+begin_src emacs-lisp
+  (use-package toc-org
+     :ensure t
+     :commands toc-org-enable
+     :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+** Habits
+#+begin_src emacs-lisp
+  (add-to-list 'org-modules 'habit t)
+  (setq 
+   org-agenda-show-future-repeats t
+   org-agenda-show-future-repeats 'next)
+#+end_src
+** GTD
+Capture templates based on GTD
+#+begin_src emacs-lisp
+  (setq org-agenda-files `(,(concat org-directory "/gtd"))
+       org-capture-templates `(("t" "Todo [inbox]" entry
+     			 (file+headline ,(concat org-directory "/gtd/gtd_inbox.org") "Tasks")
+     			 "* TODO %i%?")
+     			("T" "Tickler" entry
+     			 (file+headline ,(concat org-directory "gtd/gtd_tickler.org") "Tickler")
+     			 "* %i%? \n %U"))
+       org-refile-targets `((,(concat org-directory "/gtd/gtd_projects.org") :maxlevel . 3)
+     		     (,(concat org-directory "/gtd/gtd_someday.org") :level . 1)
+     		     (,(concat org-directory "/gtd/gtd_tickler.org") :maxlevel . 2))
+       org-image-actual-width nil)
+#+end_src
+** Custom agenda
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+	'(("v" "General view"
+	   (
+	    (tags "PRIORITY=\"A\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "High-priority unfinished tasks:")))
+	    (agenda ""
+		    ((org-agenda-span 9)
+		     (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("HOLD")))
+		     (org-agenda-start-on-weekday nil)))
+	    (tags "PRIORITY=\"B\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+	    (tags "PRIORITY=\"C\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ" "HOLD")))
+		   (org-agenda-overriding-header "Low-priority unfinished tasks:")))
+	    ;(tags "customtag"
+	    ;      ((org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled 'todo '("LOOP" "DONE" "PROJ")))
+	    ;       (org-agenda-overriding-header "Tasks marked with customtag:")))
+
+	    ;(alltodo "")
+	    ))))
+#+end_src
+** Org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :after (org)
+    :config
+     (setq 
+	  org-roam-directory (concat org-directory "/roam/")
+	  org-roam-index-file (concat org-directory "/roam/index.org")))
+#+end_src
+
+** Custom TODO states
+#+begin_src emacs-lisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "LOOP(l)" "|" "DONE(d)" "HOLD(h)")))
+#+end_src
+
+** Evil extensions
+#+begin_src emacs-lisp
+#+end_src
+
+* Language Packages
+** Web stuff
+*** web-mode
+Web cooooding
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode)))
 #+end_src
 
 * Annoyances
@@ -440,7 +488,7 @@ The only theme I know of that looks good, has legible syntax colors, and doesn't
     :ensure t
     :init
     :config
-    (load-theme 'modus-vivendi))
+    (load-theme 'modus-vivendi t))
 #+end_src
 
 * Key Bindings
