@@ -14,3 +14,7 @@ custom_config.el
 url/
 .dotenv.el
 tree-sitter/
+.cache
+.lsp-session-v1
+.org-id-locations
+bookmarks
