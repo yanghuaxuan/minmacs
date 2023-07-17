@@ -61,6 +61,7 @@ General UX enhancing packages goes here.
     (setq evil-want-keybinding nil)
     (setq evil-want-C-u-scroll t)
     (setq evil-vsplit-window-right t)
+    (setq evil-undo-system 'undo-redo)
     :config
     (evil-mode 1))
 
