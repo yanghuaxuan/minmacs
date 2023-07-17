@@ -405,7 +405,7 @@ Capture templates based on GTD
 ** Custom TODO states
 #+begin_src emacs-lisp
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "LOOP(l)" "|" "DONE(d)" "HOLD(h)")))
+      '((sequence "TODO(t)" "LOOP(l)" "HOLD(h)" "|" "DONE(d)")))
 #+end_src
 
 ** Evil extensions
